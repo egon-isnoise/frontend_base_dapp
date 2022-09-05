@@ -22,4 +22,16 @@ contract("SmartContract", (accounts) => {
       assert.equal(name, "Smart Contract");
     });
   });
+
+  describe("minting", async () => {
+    it("minted succesfully", async () => {
+      const uri = "https://example.com";
+      await smartContract.mint(accounts[0], uri);
+      const tokenUri = await smartContract.tokenURI(0);
+      const balanceOfOwner = await smartContract.balanceOf(accounts[0]);
+
+      assert.equal(tokenUri, uri);
+      assert.equal(balanceOfOwner, 1);
+    });
+  });
 });
