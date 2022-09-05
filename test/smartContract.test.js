@@ -1,3 +1,4 @@
+const {assert} = require("chai")
 const SmartContract = artifacts.require("./SmartContract.sol");
 
 require("chai").use(require("chai-as-promised")).should();
@@ -12,8 +13,8 @@ contract("SmartContract", (accounts) => {
   describe("smartContract deployment", async () => {
     it("deploys successfully", async () => {
       const address = await smartContract.address;
-      assert.notEqual(address, 0x0);
       assert.notEqual(address, "");
+      assert.notEqual(address, 0x0);
     });
 
     it("has correct name", async () => {
