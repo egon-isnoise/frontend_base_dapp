@@ -32,7 +32,7 @@ function App() {
               e.preventDefault();
               dispatch(connect());
             }}
-          >
+          > 
             CONNECT
           </StyledButton>
           <s.SpacerSmall />
