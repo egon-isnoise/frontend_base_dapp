@@ -65,7 +65,7 @@ export const connect = () => {
           });
           // Add listeners end
         } else {
-          dispatch(connectFailed("Change network to Polygon."));
+          dispatch(connectFailed("Change network to Ganache."));
         }
       } catch (err) {
         dispatch(connectFailed("Something went wrong."));

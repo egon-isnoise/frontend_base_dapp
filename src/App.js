@@ -7,7 +7,20 @@ import styled from "styled-components";
 import { create } from "ipfs-http-client";
 import SignatureCanvas from "react-signature-canvas";
 
-const ipfsClient = create("https://ipfs.infura.io:5001/api/v0");
+const { REACT_APP_INFURA_ID, REACT_APP_INFURA_SECRET_KEY } = process.env;
+
+const auth =
+    'Basic ' + Buffer.from(REACT_APP_INFURA_ID+ ':' + REACT_APP_INFURA_SECRET_KEY).toString('base64');
+    
+const ipfsClient = create({
+    host: 'infura-ipfs.io',
+    port: 5001,
+    protocol: 'https',
+    headers: {
+        authorization: auth,
+    },
+});
+
 
 export const StyledButton = styled.button`
   padding: 8px;
@@ -18,33 +31,63 @@ function App() {
   const blockchain = useSelector((state) => state.blockchain);
   const data = useSelector((state) => state.data);
   const elementRef = useRef();
+
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState("");
+  const [NFTS, setNFTS] = useState([ ]);
+
+  const ipfsBaseUrl = "https://infura-ipfs.io/ipfs/";
+  const name = "NFT name";
+  const description = "IPFS minted NFT woohooo!";
+
+  const mint = (_uri) => {
+    blockchain.smartContract.methods
+     .mint(blockchain.account, _uri)
+     .send({from: blockchain.account})
+     .once("error", (err) => {
+      console.log(err);
+      setLoading(false);
+      setStatus("There has been an error...");
+     }).then((receipt) => {
+       console.log(receipt);
+       setLoading(false);
+       setStatus("NFT minting succesful!");
+     });
+
+  };
+
+  const createMetaDataAndMint = async (_name, _des, _imgBuffer) => {
+    setLoading(true);
+    setStatus("Uploading to IPFS");
+
+    try{
+      const addedImage = await ipfsClient.add(_imgBuffer);
+      const metaDataObj = {
+        name: _name,
+        description: _des,
+        image: ipfsBaseUrl + addedImage.path,
+      };
+      const addedMetaData = await ipfsClient.add(JSON.stringify(metaDataObj));
+      console.log(ipfsBaseUrl + addedMetaData.path);
+      mint(ipfsBaseUrl + addedMetaData.path);
+    } catch (err) {
+      console.log(err);
+      setLoading(false);
+      setStatus("There has been an error...");
+    }
+  }
   
-  const ipfsBaseUrl = "https://ipfs.infura.io/ipfs/"
-  const name = "NFT Name";
-  const description = "IPFS minted NFT wooohooo";
+  const startMintingProcess = () => {
+    // add the name from an input here
+    createMetaDataAndMint(name, description,  getImageData())
+  }
 
-  // const createMetaDataAndMint = (_name, _des, _imgBuffer) => {
-  //   try {
-  //     const addedImage = await ipfsClient.add(_imgBuffer);
-  //     console.log(addedImage);
-
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-
-  // const startMintingProcess = () => {
-  //   createMetaDataAndMint(name, description, getImageData());
-  // };
-
-  // const getImageData = () => {
-  //   const canvasEl = elementRef.current;
-  //   let dataUrl = canvasEl.toDataURL("image/png");
-  //   const buffer = Buffer(dataUrl.split(",")[1], "base64");
-  //   console.log(buffer);
-  //   return buffer;
-  // };
+  const getImageData = () => {
+    const canvasEl = elementRef.current;
+    let dataUrl = canvasEl.toDataURL("image/png");
+    const buffer = Buffer(dataUrl.split(",")[1], "base64");
+    return buffer;
+  }
 
   useEffect(() => {
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
@@ -76,18 +119,37 @@ function App() {
           <s.TextTitle style={{ textAlign: "center" }}>
             Welcome! Mint your signature!
           </s.TextTitle>
+
+          {loading ? (
+            <>
+              <s.SpacerSmall />
+              <s.TextDescription style={{ textAlign: "center" }}>
+                loading...
+              </s.TextDescription>
+            </>
+          ) : null}
+
+          {status !== "" ? (
+            <>
+              <s.SpacerSmall />
+              <s.TextDescription style={{ textAlign: "center" }}>
+                {status}
+              </s.TextDescription>
+            </>
+          ) : null}
+    
           <s.SpacerLarge/>
           <StyledButton
             onClick={(e) => {
               e.preventDefault();
-              // startMintingProcess();
+              startMintingProcess();
             }}
           > 
             MINT
           </StyledButton>
           <s.SpacerLarge/>
           <SignatureCanvas
-            canvasProps={{width:300, height: 350}}
+            canvasProps={{width:550, height: 550}}
             backgroundColor={"#3271bf"}
             ref={elementRef}
           />
