@@ -52,6 +52,7 @@ contract SmartContract is ERC721, Ownable {
         uint256 newId = _tokenIds.current();
         _mint(recipient, newId);
         _setTokenURI(newId, uri);
+        _tokenIds.increment();
         return newId;
     }
 }

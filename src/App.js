@@ -51,7 +51,7 @@ function App() {
      }).then((receipt) => {
        console.log(receipt);
        setLoading(false);
-       setStatus("NFT minting succesful!");
+       setStatus("NFT minting successful!");
      });
 
   };
@@ -89,11 +89,23 @@ function App() {
     return buffer;
   }
 
+  const fetchMetaDataForNFTS = () => {
+    setNFTS([]);
+    data.allTokens.forEach((nft) => {
+
+    })
+  }
+
   useEffect(() => {
     if (blockchain.account !== "" && blockchain.smartContract !== null) {
       dispatch(fetchData(blockchain.account));
     }
   }, [blockchain.smartContract, dispatch]);
+
+  useEffect(() => {
+    //fetchMetaDataForNFTS();
+
+  }, [data.allTokens]);
 
   return (
     <s.Screen>
