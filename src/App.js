@@ -52,6 +52,7 @@ function App() {
        console.log(receipt);
        setLoading(false);
        ClearCanvas();
+       dispatch(fetchData(blockchain.account));
        setStatus("NFT minting successful!");
      });
 
