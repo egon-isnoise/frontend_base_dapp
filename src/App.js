@@ -51,6 +51,7 @@ function App() {
      }).then((receipt) => {
        console.log(receipt);
        setLoading(false);
+       ClearCanvas();
        setStatus("NFT minting successful!");
      });
 
@@ -92,8 +93,22 @@ function App() {
   const fetchMetaDataForNFTS = () => {
     setNFTS([]);
     data.allTokens.forEach((nft) => {
+      fetch(nft.uri)
+        .then((response) => response.json())
+        .then((metaData) => {
+             setNFTS((prevState) => [
+              ...prevState, 
+              {id: nft.id, metaData: metaData}
+            ]);
+        }).catch((err) => {
+          console.log(err);
+        });
+    });
+  }
 
-    })
+  const ClearCanvas = () => {
+    const canvasEl = elementRef.current;
+    canvasEl.clear();
   }
 
   useEffect(() => {
@@ -103,7 +118,7 @@ function App() {
   }, [blockchain.smartContract, dispatch]);
 
   useEffect(() => {
-    //fetchMetaDataForNFTS();
+    fetchMetaDataForNFTS();
 
   }, [data.allTokens]);
 
@@ -151,24 +166,62 @@ function App() {
           ) : null}
     
           <s.SpacerLarge/>
-          <StyledButton
-            onClick={(e) => {
-              e.preventDefault();
-              startMintingProcess();
-            }}
-          > 
-            MINT
-          </StyledButton>
+
+          <s.Container  fd={"row"} jc={"center"}>
+            <StyledButton
+              onClick={(e) => {
+                e.preventDefault();
+                startMintingProcess();
+              }}
+            > 
+              MINT
+            </StyledButton>
+
+            <s.SpacerSmall />
+
+            <StyledButton
+              onClick={(e) => {
+                e.preventDefault();
+                ClearCanvas();
+              }}
+            > 
+              CLEAR
+            </StyledButton>
+          </s.Container>
+
           <s.SpacerLarge/>
           <SignatureCanvas
             canvasProps={{width:550, height: 550}}
             backgroundColor={"#3271bf"}
             ref={elementRef}
           />
+
+          <s.SpacerLarge/>
+          {data.loading ? (
+            <>
+              <s.SpacerSmall />
+              <s.TextDescription style={{ textAlign: "center" }}>
+                loading...
+              </s.TextDescription>
+            </> 
+          ):(
+          NFTS.map((nft, index) => {
+            return(
+              <s.Container key={index} ai={"center"} style={{padding:16}}>
+                <s.TextTitle>{nft.metaData.name}</s.TextTitle>
+                <img 
+                  alt={nft.metaData.name} 
+                  src={nft.metaData.image}
+                  width={150}
+                />
+              </s.Container>
+            );
+          })
+        )}
         </s.Container>
       )}
     </s.Screen>
-  );
+  )
 }
 
 export default App;

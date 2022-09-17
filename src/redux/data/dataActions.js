@@ -32,7 +32,7 @@ export const fetchData = (account) => {
 
       let allTokens = await store
         .getState()
-        .blockchain.smartContract.methods.getAllTokens.call()
+        .blockchain.smartContract.methods.getAllTokens()
         .call();
 
       dispatch(
