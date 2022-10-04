@@ -151,6 +151,7 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
   font-family: "Baloo 2";
+  background-image: "../assets/bkg.png";
 }
 
 html {

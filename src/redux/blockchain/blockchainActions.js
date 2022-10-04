@@ -65,7 +65,7 @@ export const connect = () => {
           });
           // Add listeners end
         } else {
-          dispatch(connectFailed("Change network to Ganache."));
+          dispatch(connectFailed("Switch network to Goerli."));
         }
       } catch (err) {
         dispatch(connectFailed("Something went wrong."));

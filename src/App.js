@@ -6,11 +6,12 @@ import * as s from "./styles/globalStyles";
 import styled from "styled-components";
 import { create } from "ipfs-http-client";
 import SignatureCanvas from "react-signature-canvas";
+import image from "../src/assets/bkg.png";
 
-const { REACT_APP_INFURA_ID, REACT_APP_INFURA_SECRET_KEY } = process.env;
+const { REACT_APP_IPFS_INFURA_ID, REACT_APP_IPFS_INFURA_SECRET_KEY } = process.env;
 
 const auth =
-    'Basic ' + Buffer.from(REACT_APP_INFURA_ID+ ':' + REACT_APP_INFURA_SECRET_KEY).toString('base64');
+    'Basic ' + Buffer.from(REACT_APP_IPFS_INFURA_ID+ ':' + REACT_APP_IPFS_INFURA_SECRET_KEY).toString('base64');
     
 const ipfsClient = create({
     host: 'infura-ipfs.io',
@@ -124,7 +125,7 @@ function App() {
   }, [data.allTokens]);
 
   return (
-    <s.Screen>
+    <s.Screen backgroundImage={image}>
       {blockchain.account === "" || blockchain.smartContract === null ? (
         <s.Container flex={1} ai={"center"} jc={"center"}>
           <s.TextTitle>Connect to the Blockchain</s.TextTitle>
